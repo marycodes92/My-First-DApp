@@ -3,6 +3,7 @@ import { signIn } from 'next-auth/react';
 import { useAccount, useConnect, useSignMessage, useDisconnect } from 'wagmi';
 import { useRouter } from 'next/router';
 import { useAuthRequestChallengeEvm } from '@moralisweb3/next';
+import { useState } from 'react';
 
 function SignIn() {
     const { connectAsync } = useConnect();
@@ -12,7 +13,10 @@ function SignIn() {
     const { requestChallengeAsync } = useAuthRequestChallengeEvm();
     const { push } = useRouter();
 
+    const [isLoading, setIsLoading] = useState(false)
+
     const handleAuth = async () => {
+        setIsLoading(true)
         if (isConnected) {
             await disconnectAsync();
         }
@@ -29,13 +33,14 @@ function SignIn() {
          * instead of using signIn(..., redirect: "/user")
          * we get the url from callback and push it to the router to avoid page refreshing
          */
+        setIsLoading(false)
         push(url);
     };
 
     return (
         <div>
             <h3>Web3 Authentication With MetaMask</h3>
-            <button onClick={handleAuth}>Login with Metamask</button>
+            <button onClick={handleAuth}>{isLoading ? "Loading..." : "Login with Metamask"}</button>
         </div>
     );
 }
